@@ -1789,6 +1789,207 @@ const styles = `
         .theme-solarized .markdown-body pre { background: #ddddc1; color: #586e75; }
         .theme-solarized .markdown-body code { background: #ddddc1; color: #586e75; }
         .theme-solarized .markdown-body pre code { color: #586e75; }
+
+        /* ------------------------------------------------------------------
+           KOKONI visual refresh (site-inspired)
+           ------------------------------------------------------------------ */
+        .theme-dark,
+        .theme-light,
+        .theme-solarized {
+            --kokoni-bg-0: #eef6ff;
+            --kokoni-bg-1: #f7fbff;
+            --kokoni-card: rgba(255, 255, 255, 0.82);
+            --kokoni-card-strong: rgba(255, 255, 255, 0.94);
+            --kokoni-border: rgba(71, 146, 226, 0.24);
+            --kokoni-text: #0f2647;
+            --kokoni-muted: #5c7699;
+            --kokoni-primary: #1f8bff;
+            --kokoni-primary-2: #2ac7cf;
+            --kokoni-shadow: 0 14px 40px rgba(30, 93, 173, 0.14);
+            --canvas-grid-color: rgba(43, 130, 230, 0.24);
+        }
+
+        .kokoni-shell {
+            position: relative;
+            background: linear-gradient(150deg, var(--kokoni-bg-0) 0%, var(--kokoni-bg-1) 45%, #ecf9ff 100%) !important;
+            color: var(--kokoni-text) !important;
+            overflow: hidden;
+        }
+        .kokoni-shell::before {
+            content: '';
+            position: absolute;
+            inset: -180px auto auto -120px;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(32, 140, 255, 0.24) 0%, rgba(32, 140, 255, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .kokoni-shell > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .kokoni-topbar {
+            background: rgba(248, 252, 255, 0.85) !important;
+            border-bottom: 1px solid var(--kokoni-border) !important;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 24px rgba(18, 74, 142, 0.08);
+        }
+
+        .kokoni-samples-strip,
+        .kokoni-footer-strip {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(10px);
+        }
+        .kokoni-samples-strip {
+            border-bottom: 1px solid var(--kokoni-border);
+        }
+        .kokoni-footer-strip {
+            border-top: 1px solid var(--kokoni-border);
+        }
+        .kokoni-sample-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(71, 146, 226, 0.28);
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 11px;
+            line-height: 1;
+            background: rgba(255, 255, 255, 0.88);
+            color: #15406f;
+            box-shadow: 0 6px 18px rgba(15, 68, 129, 0.09);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .kokoni-sample-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(31, 139, 255, 0.5);
+            box-shadow: 0 10px 20px rgba(31, 139, 255, 0.2);
+        }
+        .kokoni-sample-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .kokoni-company-pill,
+        .kokoni-dev-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--kokoni-border);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 10px;
+            line-height: 1;
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--kokoni-text);
+            text-decoration: none;
+            box-shadow: 0 6px 18px rgba(15, 68, 129, 0.08);
+            white-space: nowrap;
+        }
+        .kokoni-dev-link:hover {
+            border-color: rgba(31, 139, 255, 0.42);
+            transform: translateY(-1px);
+        }
+
+        .kokoni-shell [class*="bg-zinc-"],
+        .kokoni-shell [class*="bg-[#09090b]"],
+        .kokoni-shell [class*="bg-[#121214]"],
+        .kokoni-shell [class*="bg-[#18181b]"],
+        .kokoni-shell [class*="bg-white"] {
+            background-color: var(--kokoni-card) !important;
+            border-color: var(--kokoni-border) !important;
+            color: var(--kokoni-text);
+        }
+
+        .kokoni-shell [class*="text-zinc-"] {
+            color: var(--kokoni-muted);
+        }
+
+        .kokoni-shell [class*="border-zinc-"],
+        .kokoni-shell [class*="border-[#d7cfb2]"],
+        .kokoni-shell [class*="border-[#eee8d5]"] {
+            border-color: var(--kokoni-border) !important;
+        }
+
+        .kokoni-shell button,
+        .kokoni-shell .btn {
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .kokoni-shell button:hover {
+            transform: translateY(-1px);
+        }
+
+        .kokoni-shell button[class*="bg-blue-"],
+        .kokoni-shell button[class*="bg-green-"],
+        .kokoni-shell button[class*="from-blue-"],
+        .kokoni-shell button[class*="to-indigo-"] {
+            background-image: linear-gradient(90deg, var(--kokoni-primary) 0%, var(--kokoni-primary-2) 100%) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 24px rgba(25, 120, 220, 0.25);
+        }
+
+        .kokoni-shell input,
+        .kokoni-shell textarea,
+        .kokoni-shell select {
+            background: rgba(255, 255, 255, 0.92) !important;
+            border-color: rgba(82, 149, 218, 0.35) !important;
+            color: #18345f !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        #canvas-bg {
+            background-image: radial-gradient(var(--canvas-grid-color) 1.2px, transparent 1.2px), linear-gradient(transparent, transparent) !important;
+            background-size: 26px 26px !important;
+            background-color: rgba(241, 248, 255, 0.88) !important;
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 1px rgba(82, 149, 218, 0.2);
+        }
+
+        .node-wrapper {
+            border-radius: 16px !important;
+            border: 1px solid rgba(82, 149, 218, 0.35) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: var(--kokoni-shadow) !important;
+        }
+
+        .connector {
+            background-color: #ffffff;
+            border-color: #75b4f6;
+            color: #4e87cb;
+        }
+        .connector:hover,
+        .connector.active {
+            background-color: #1f8bff;
+            border-color: #2ac7cf;
+            color: #ffffff;
+        }
+
+        .lightbox-overlay {
+            background: rgba(8, 25, 48, 0.82);
+            backdrop-filter: blur(8px);
+        }
+
+        .art-loader-container {
+            background: linear-gradient(160deg, #eef6ff 0%, #f7fbff 60%, #e6f7ff 100%);
+            color: #163760;
+        }
+        .art-ring-outer {
+            border-color: rgba(32, 140, 255, 0.26);
+        }
+        .art-ring-inner {
+            border-top-color: #1f8bff;
+            border-left-color: rgba(42, 199, 207, 0.55);
+        }
+        .art-dot {
+            background-color: #1f8bff;
+            box-shadow: 0 0 14px rgba(31, 139, 255, 0.35);
+        }
         `;
 
 // --- 虚拟画布尺寸 ---
@@ -1857,6 +2058,9 @@ const RATIOS = ['Auto', '1:1', '16:9', '9:16', '4:3', '3:4', '21:9', '3:2', '2:3
 const GROK_VIDEO_RATIOS = ['3:2', '2:3', '1:1'];
 const VIDEO_RES_OPTIONS = ['1080P', '720P'];
 const PROMPT_LIBRARY_KEY = 'tapnow_prompt_library';
+const DEFAULT_SAMPLE_WORKFLOWS = [
+    { id: 'test', name: '测试', downloadUrl: '/workflow-samples/test.json' }
+];
 const GRID_PROMPT_TEXT = `基于我上传的这张参考图，生成一张九宫格（3x3 grid）布局的分镜脚本。请严格保持角色与参考图一致（Keep character strictly consistent），但在9个格子中展示该角色不同的动作、表情和拍摄角度（如正面、侧面、背面、特写等）。要求风格高度统一，形成一张完整的角色动态表（Character Sheet）。`;
 const UPSCALE_PROMPT_TEXT = `请对参考图片进行无损高清放大（Upscale）。请严格保持原图的构图、色彩、光影和所有细节元素不变，不要进行任何创造性的重绘或添加新内容。仅专注于提升分辨率、锐化边缘（Sharpening）和去除噪点（Denoising），实现像素级的高清修复。Best quality, 8k, masterpiece, highres, ultra detailed, sharp focus, image restoration, upscale, faithful to original.`;
 const STORYBOARD_PROMPT_TEXT = `you are a veteran Hollywood storyboard artist with years of experience. You have the ability to accurately analyze character features and scene characteristics based on images. Provide me with the most suitable camera angles and storyboards. Strictly base this on the uploaded character and scene images, while maintaining a consistent visual style.
@@ -4524,9 +4728,9 @@ const Lightbox = ({ item, onClose, onNavigate, onShotNavigate, onHistoryNavigate
 function TapnowApp() {
     const [theme, setTheme] = useState(() => {
         try {
-            return localStorage.getItem('tapnow_theme') || 'dark';
+            return localStorage.getItem('tapnow_theme') || 'light';
         } catch (e) {
-            return 'dark';
+            return 'light';
         }
     });
     const [language, setLanguage] = useState('zh');
@@ -4589,13 +4793,13 @@ function TapnowApp() {
         root.classList.remove('theme-dark', 'theme-light', 'theme-solarized');
         if (theme === 'dark') {
             root.classList.add('theme-dark');
-            document.body.style.backgroundColor = '#09090b';
+            document.body.style.backgroundColor = '#e9f4ff';
         } else if (theme === 'solarized') {
             root.classList.add('theme-solarized');
-            document.body.style.backgroundColor = '#fdf6e3';
+            document.body.style.backgroundColor = '#f2fbff';
         } else {
             root.classList.add('theme-light');
-            document.body.style.backgroundColor = '#f4f4f5';
+            document.body.style.backgroundColor = '#f7fcff';
         }
     }, [theme]);
 
@@ -5507,6 +5711,8 @@ function TapnowApp() {
     const [localServerUrl, setLocalServerUrl] = useState(() => {
         return localStorage.getItem('tapnow_local_server_url') || 'http://127.0.0.1:9527';
     });
+    const [sampleWorkflows, setSampleWorkflows] = useState(DEFAULT_SAMPLE_WORKFLOWS);
+    const [sampleWorkflowLoadingId, setSampleWorkflowLoadingId] = useState('');
 
     // V2.6.1 Feature: 本地缓存服务器状态
     const [localCacheServerConnected, setLocalCacheServerConnected] = useState(false);
@@ -5828,6 +6034,68 @@ function TapnowApp() {
     useEffect(() => {
         localStorage.setItem('tapnow_local_server_url', localServerUrl);
     }, [localServerUrl]);
+    const normalizeSampleWorkflowItem = useCallback((item, index = 0) => {
+        if (!item || typeof item !== 'object') return null;
+        const idRaw = item.id ?? item.key ?? item.slug ?? `sample-${index + 1}`;
+        const nameRaw = item.name ?? item.title ?? item.label ?? `样例 ${index + 1}`;
+        const name = String(nameRaw || '').trim();
+        if (!name) return null;
+        const firstUrl = item.downloadUrl ?? item.url ?? item.download_url ?? item.href ?? '';
+        let downloadUrl = String(firstUrl || '').trim();
+        if (!downloadUrl) {
+            const fileRaw = item.file ?? item.fileName ?? item.filename ?? item.path ?? '';
+            const file = String(fileRaw || '').trim().replace(/^\/+/, '');
+            if (file) {
+                downloadUrl = `/workflow-samples/${file}`;
+            }
+        }
+        if (!downloadUrl) {
+            downloadUrl = `/workflow-samples/${encodeURIComponent(String(idRaw || `sample-${index + 1}`))}.json`;
+        }
+        return {
+            id: String(idRaw || `sample-${index + 1}`),
+            name,
+            downloadUrl
+        };
+    }, []);
+    const normalizeSampleWorkflowList = useCallback((payload) => {
+        let list = [];
+        if (Array.isArray(payload)) {
+            list = payload;
+        } else if (payload && typeof payload === 'object') {
+            if (Array.isArray(payload.workflows)) list = payload.workflows;
+            else if (Array.isArray(payload.list)) list = payload.list;
+            else if (Array.isArray(payload.data)) list = payload.data;
+        }
+        const normalized = list
+            .map((item, index) => normalizeSampleWorkflowItem(item, index))
+            .filter(Boolean);
+        if (normalized.length === 0) {
+            return DEFAULT_SAMPLE_WORKFLOWS.slice();
+        }
+        return normalized;
+    }, [normalizeSampleWorkflowItem]);
+    const refreshSampleWorkflows = useCallback(async () => {
+        const base = String(localServerUrl || 'http://127.0.0.1:9527').trim().replace(/\/+$/, '');
+        if (!base) {
+            setSampleWorkflows(DEFAULT_SAMPLE_WORKFLOWS.slice());
+            return;
+        }
+        try {
+            const response = await fetch(`${base}/workflow-samples`, { method: 'GET' });
+            if (!response.ok) {
+                setSampleWorkflows(DEFAULT_SAMPLE_WORKFLOWS.slice());
+                return;
+            }
+            const payload = await response.json();
+            setSampleWorkflows(normalizeSampleWorkflowList(payload));
+        } catch (error) {
+            setSampleWorkflows(DEFAULT_SAMPLE_WORKFLOWS.slice());
+        }
+    }, [localServerUrl, normalizeSampleWorkflowList]);
+    useEffect(() => {
+        refreshSampleWorkflows();
+    }, [refreshSampleWorkflows]);
     useEffect(() => {
         try { localStorage.setItem('tapnow_local_cache_enabled', String(localCacheEnabled)); } catch (e) { }
     }, [localCacheEnabled]);
@@ -18443,7 +18711,7 @@ function TapnowApp() {
                     const bundleName = `${projectName || '未命名项目'}_${timestamp}.zip`;
                     const handle = await window.showSaveFilePicker({
                         suggestedName: bundleName,
-                        types: [{ description: 'Tapnow Bundle', accept: { 'application/zip': ['.zip'] } }],
+                        types: [{ description: 'KOKONI Bundle', accept: { 'application/zip': ['.zip'] } }],
                     });
                     const projectData = {
                         version: '2.5.7',
@@ -19072,6 +19340,160 @@ function TapnowApp() {
         }
     };
 
+    const importWorkflowFromData = useCallback(async (data, options = {}) => {
+        const { showSuccessAlert = true } = options;
+        if (!data || typeof data !== 'object' || data.type !== 'workflow') {
+            throw new Error('这不是一个有效的工作流文件。\n\n请使用"保存当前选取工作流"功能导出的文件。');
+        }
+        if (!Array.isArray(data.nodes) || data.nodes.length === 0) {
+            throw new Error(t('工作流文件中没有节点数据'));
+        }
+
+        let localFiles = [];
+        const baseUrl = (localServerUrl || 'http://127.0.0.1:9527').replace(/\/+$/, '');
+        try {
+            if (baseUrl) {
+                const localFilesRes = await fetch(`${baseUrl}/list-files`);
+                if (localFilesRes.ok) {
+                    const localFilesData = await localFilesRes.json();
+                    if (localFilesData.success && localFilesData.files) {
+                        localFiles = localFilesData.files;
+                    }
+                }
+            }
+        } catch (err) {
+            console.log('[导入工作流] 本地服务器未连接');
+        }
+
+        const findLocalFileBySize = (dataUrl) => {
+            if (!localFiles.length || !dataUrl) return null;
+            try {
+                const base64 = dataUrl.split(',')[1];
+                if (!base64) return null;
+                const estimatedSize = Math.floor(base64.length * 0.75);
+                const tolerance = estimatedSize * 0.05;
+                const match = localFiles.find((f) => Math.abs(f.size - estimatedSize) < tolerance);
+                if (match) {
+                    return `${baseUrl}/file/${encodeURIComponent(match.rel_path)}`;
+                }
+            } catch (err) { }
+            return null;
+        };
+
+        const convertNodeUrls = async (node) => {
+            const stack = [node];
+            while (stack.length > 0) {
+                const current = stack.pop();
+                if (!current || typeof current !== 'object') continue;
+
+                for (const key in current) {
+                    const val = current[key];
+                    if (typeof val === 'string' && (val.startsWith('data:image/') || val.startsWith('data:video/'))) {
+                        try {
+                            const localUrl = findLocalFileBySize(val);
+                            if (localUrl) {
+                                const testRes = await fetch(localUrl, { method: 'HEAD' });
+                                if (testRes.ok) {
+                                    current[key] = localUrl;
+                                    continue;
+                                }
+                            }
+                            const res = await fetch(val);
+                            const blob = await res.blob();
+                            current[key] = URL.createObjectURL(blob);
+                        } catch (err) { }
+                    } else if (typeof val === 'object' && val !== null) {
+                        stack.push(val);
+                    }
+                }
+            }
+            return node;
+        };
+
+        const idMap = new Map();
+        data.nodes.forEach((node) => {
+            idMap.set(node.id, `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+        });
+
+        const canvasElement = canvasRef.current;
+        let importX = 100;
+        let importY = 100;
+        if (canvasElement) {
+            const rect = canvasElement.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const worldPos = screenToWorld(centerX + rect.left, centerY + rect.top);
+            importX = worldPos.x;
+            importY = worldPos.y;
+        }
+
+        let minX = Infinity;
+        let minY = Infinity;
+        data.nodes.forEach((node) => {
+            if (node.x < minX) minX = node.x;
+            if (node.y < minY) minY = node.y;
+        });
+
+        const safeMinX = Number.isFinite(minX) ? minX : 0;
+        const safeMinY = Number.isFinite(minY) ? minY : 0;
+        const newNodes = [];
+        for (const node of data.nodes) {
+            const convertedNode = await convertNodeUrls({ ...node });
+            convertedNode.id = idMap.get(node.id);
+            convertedNode.x = (Number(node.x) || 0) - safeMinX + importX;
+            convertedNode.y = (Number(node.y) || 0) - safeMinY + importY;
+            newNodes.push(convertedNode);
+        }
+
+        const newConnections = (data.connections || []).map((conn) => ({
+            ...conn,
+            from: idMap.get(conn.from),
+            to: idMap.get(conn.to)
+        })).filter((conn) => conn.from && conn.to);
+
+        setNodes((prev) => [...prev, ...newNodes]);
+        setConnections((prev) => [...prev, ...newConnections]);
+        setSelectedNodeIds(new Set(newNodes.map((n) => n.id)));
+
+        if (showSuccessAlert) {
+            alert(`工作流导入成功！\n\n导入了 ${newNodes.length} 个节点和 ${newConnections.length} 个连接。`);
+        } else {
+            showToast(`工作流已加载：${newNodes.length} 个节点 / ${newConnections.length} 个连接`, 'success', 2600);
+        }
+        return { newNodes, newConnections };
+    }, [localServerUrl, screenToWorld, showToast, t]);
+
+    const getSampleWorkflowDownloadUrl = useCallback((sample) => {
+        const source = String(sample?.downloadUrl || '').trim();
+        const base = String(localServerUrl || 'http://127.0.0.1:9527').trim().replace(/\/+$/, '');
+        if (/^https?:\/\//i.test(source)) return source;
+        const normalizedSource = source.startsWith('/') ? source : `/${source}`;
+        return `${base}${normalizedSource}`;
+    }, [localServerUrl]);
+
+    const handleLoadSampleWorkflow = useCallback(async (sample) => {
+        if (!sample) return;
+        const sampleName = String(sample.name || '样例工作流').trim() || '样例工作流';
+        const sampleId = String(sample.id || sampleName);
+        const loadingToastId = showToast(`正在下载「${sampleName}」工作流...`, 'info', 600000);
+        setSampleWorkflowLoadingId(sampleId);
+        try {
+            const downloadUrl = getSampleWorkflowDownloadUrl(sample);
+            const response = await fetch(downloadUrl, { method: 'GET' });
+            if (!response.ok) {
+                throw new Error(`下载失败（HTTP ${response.status}）`);
+            }
+            const text = await response.text();
+            const workflowData = JSON.parse(text);
+            await importWorkflowFromData(workflowData, { showSuccessAlert: false });
+        } catch (error) {
+            showToast(`加载样例工作流失败: ${error.message || '未知错误'}`, 'error', 3600);
+        } finally {
+            dismissToast(loadingToastId);
+            setSampleWorkflowLoadingId('');
+        }
+    }, [showToast, getSampleWorkflowDownloadUrl, importWorkflowFromData, dismissToast]);
+
     // 导入工作流（将工作流节点添加到当前画布）
     const handleImportWorkflow = async () => {
         const input = document.createElement('input');
@@ -19080,124 +19502,10 @@ function TapnowApp() {
         input.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             try {
                 const text = await file.text();
                 const data = JSON.parse(text);
-
-                if (data.type !== 'workflow') {
-                    alert('这不是一个有效的工作流文件。\n\n请使用"保存当前选取工作流"功能导出的文件。');
-                    return;
-                }
-                if (!data.nodes || data.nodes.length === 0) {
-                    alert(t('工作流文件中没有节点数据'));
-                    return;
-                }
-
-                let localFiles = [];
-                const baseUrl = (localServerUrl || 'http://127.0.0.1:9527').replace(/\/+$/, '');
-                try {
-                    if (baseUrl) {
-                        const localFilesRes = await fetch(`${baseUrl}/list-files`);
-                        if (localFilesRes.ok) {
-                            const localFilesData = await localFilesRes.json();
-                            if (localFilesData.success && localFilesData.files) {
-                                localFiles = localFilesData.files;
-                                console.log(`[导入工作流] 本地库已连接，找到 ${localFiles.length} 个文件`);
-                            }
-                        }
-                    }
-                } catch (err) {
-                    console.log('[导入工作流] 本地服务器未连接');
-                }
-
-                const findLocalFileBySize = (dataUrl) => {
-                    if (!localFiles.length || !dataUrl) return null;
-                    try {
-                        const base64 = dataUrl.split(',')[1];
-                        if (!base64) return null;
-                        const estimatedSize = Math.floor(base64.length * 0.75);
-                        const tolerance = estimatedSize * 0.05;
-                        const match = localFiles.find(f => Math.abs(f.size - estimatedSize) < tolerance);
-                        if (match) {
-                            return `${baseUrl}/file/${encodeURIComponent(match.rel_path)}`;
-                        }
-                    } catch (err) { }
-                    return null;
-                };
-
-                const convertNodeUrls = async (node) => {
-                    const stack = [node];
-                    while (stack.length > 0) {
-                        const current = stack.pop();
-                        if (!current || typeof current !== 'object') continue;
-
-                        for (const key in current) {
-                            const val = current[key];
-                            if (typeof val === 'string' && (val.startsWith('data:image/') || val.startsWith('data:video/'))) {
-                                try {
-                                    const localUrl = findLocalFileBySize(val);
-                                    if (localUrl) {
-                                        const testRes = await fetch(localUrl, { method: 'HEAD' });
-                                        if (testRes.ok) {
-                                            current[key] = localUrl;
-                                            continue;
-                                        }
-                                    }
-                                    const res = await fetch(val);
-                                    const blob = await res.blob();
-                                    current[key] = URL.createObjectURL(blob);
-                                } catch (err) { }
-                            } else if (typeof val === 'object' && val !== null) {
-                                stack.push(val);
-                            }
-                        }
-                    }
-                    return node;
-                };
-
-                const idMap = new Map();
-                data.nodes.forEach(node => {
-                    idMap.set(node.id, `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
-                });
-
-                const canvasElement = canvasRef.current;
-                let importX = 100, importY = 100;
-                if (canvasElement) {
-                    const rect = canvasElement.getBoundingClientRect();
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const worldPos = screenToWorld(centerX + rect.left, centerY + rect.top);
-                    importX = worldPos.x;
-                    importY = worldPos.y;
-                }
-
-                let minX = Infinity, minY = Infinity;
-                data.nodes.forEach(node => {
-                    if (node.x < minX) minX = node.x;
-                    if (node.y < minY) minY = node.y;
-                });
-
-                const newNodes = [];
-                for (const node of data.nodes) {
-                    const convertedNode = await convertNodeUrls({ ...node });
-                    convertedNode.id = idMap.get(node.id);
-                    convertedNode.x = node.x - minX + importX;
-                    convertedNode.y = node.y - minY + importY;
-                    newNodes.push(convertedNode);
-                }
-
-                const newConnections = (data.connections || []).map(conn => ({
-                    ...conn,
-                    from: idMap.get(conn.from),
-                    to: idMap.get(conn.to)
-                })).filter(conn => conn.from && conn.to);
-
-                setNodes(prev => [...prev, ...newNodes]);
-                setConnections(prev => [...prev, ...newConnections]);
-                setSelectedNodeIds(new Set(newNodes.map(n => n.id)));
-
-                alert(`工作流导入成功！\n\n导入了 ${newNodes.length} 个节点和 ${newConnections.length} 个连接。`);
+                await importWorkflowFromData(data, { showSuccessAlert: true });
             } catch (error) {
                 console.error('导入工作流失败:', error);
                 alert('导入失败: ' + (error.message || '无效的JSON文件'));
@@ -32732,7 +33040,7 @@ ${inputText.substring(0, 15000)} ... (截断)
                 type={progressState.type}
             />
             <div
-                className={`w-full h-screen font-sans overflow-hidden select-none flex flex-col transition-colors duration-300 ${theme === 'dark'
+                className={`kokoni-shell w-full h-screen font-sans overflow-hidden select-none flex flex-col transition-colors duration-300 ${theme === 'dark'
                     ? 'bg-[#09090b] text-white'
                     : theme === 'solarized'
                         ? 'bg-[#fdf6e3] text-[#586e75]'
@@ -32746,7 +33054,7 @@ ${inputText.substring(0, 15000)} ... (截断)
             >
                 {/* Top Bar */}
                 <div
-                    className={`h-12 flex items-center justify-between px-4 z-50 shrink-0 border-b transition-colors duration-300 ${theme === 'dark'
+                    className={`kokoni-topbar h-12 flex items-center justify-between px-4 z-50 shrink-0 border-b transition-colors duration-300 ${theme === 'dark'
                         ? 'bg-[#09090b] border-zinc-800'
                     : theme === 'solarized'
                         ? 'bg-[#eee8d5] border-[#d7cfb2]'
@@ -32754,14 +33062,14 @@ ${inputText.substring(0, 15000)} ... (截断)
                         }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-md flex items-center justify-center">
+                        <div className="w-7 h-7 bg-gradient-to-br from-[#1f8bff] to-[#2ac7cf] rounded-md flex items-center justify-center shadow-[0_8px_20px_rgba(31,139,255,0.35)]">
                             <Layers size={16} className="text-white" />
                         </div>
                         <span
                             className={`font-bold text-sm tracking-wide ${theme === 'dark' ? 'text-zinc-200' : 'text-zinc-800'
                                 }`}
                         >
-                            Tapnow Studio
+                            KOKONI Creative Studio
                         </span>
                         {/* 功能4：项目名称编辑 */}
                         {isEditingProjectName ? (
@@ -32962,6 +33270,29 @@ ${inputText.substring(0, 15000)} ... (截断)
                         >
                             {t('API 设置')}
                         </Button>
+                    </div>
+                </div>
+
+                <div className="kokoni-samples-strip px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+                    <span className="text-[11px] font-semibold text-[#1e4e83] whitespace-nowrap">样例工作流</span>
+                    <div className="flex items-center gap-2">
+                        {sampleWorkflows.map((item, index) => {
+                            const itemId = String(item.id || `sample-${index}`);
+                            const isLoading = sampleWorkflowLoadingId === itemId;
+                            return (
+                                <button
+                                    key={itemId}
+                                    type="button"
+                                    className="kokoni-sample-btn"
+                                    onClick={() => handleLoadSampleWorkflow(item)}
+                                    disabled={isLoading}
+                                    title={isLoading ? `正在下载 ${item.name}` : `加载 ${item.name}`}
+                                >
+                                    <Download size={12} />
+                                    <span>{isLoading ? `下载中：${item.name}` : item.name}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -38452,6 +38783,30 @@ ${inputText.substring(0, 15000)} ... (截断)
                         )}
                     </div>
 
+                </div>
+                <div className="kokoni-footer-strip px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+                    <div className="kokoni-company-pill">
+                        <Monitor size={12} />
+                        <span>Company: Moxin (Huzhou) Technology Co., LTD · Huzhou / Shenzhen / Hong Kong</span>
+                    </div>
+                    <a
+                        className="kokoni-dev-link"
+                        href="https://www.kokoni3d.com/pages/app"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <Code size={12} />
+                        <span>Developer: KOKONI 3D App Team</span>
+                    </a>
+                    <a
+                        className="kokoni-dev-link"
+                        href="https://www.kokoni3d.com/pages/kokoni-support"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <Sparkles size={12} />
+                        <span>Support: kokoni3d.com/pages/kokoni-support</span>
+                    </a>
                 </div>
             </div >
 
