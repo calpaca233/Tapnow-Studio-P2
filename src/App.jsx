@@ -1837,10 +1837,42 @@ const styles = `
             box-shadow: 0 8px 24px rgba(18, 74, 142, 0.08);
         }
 
-        .kokoni-info-strip {
-            border-bottom: 1px solid var(--kokoni-border);
-            background: rgba(255, 255, 255, 0.68);
+        .kokoni-samples-strip,
+        .kokoni-footer-strip {
+            background: rgba(255, 255, 255, 0.72);
             backdrop-filter: blur(10px);
+        }
+        .kokoni-samples-strip {
+            border-bottom: 1px solid var(--kokoni-border);
+        }
+        .kokoni-footer-strip {
+            border-top: 1px solid var(--kokoni-border);
+        }
+        .kokoni-sample-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(71, 146, 226, 0.28);
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 11px;
+            line-height: 1;
+            background: rgba(255, 255, 255, 0.88);
+            color: #15406f;
+            box-shadow: 0 6px 18px rgba(15, 68, 129, 0.09);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .kokoni-sample-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(31, 139, 255, 0.5);
+            box-shadow: 0 10px 20px rgba(31, 139, 255, 0.2);
+        }
+        .kokoni-sample-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         .kokoni-company-pill,
         .kokoni-dev-link {
@@ -2026,6 +2058,9 @@ const RATIOS = ['Auto', '1:1', '16:9', '9:16', '4:3', '3:4', '21:9', '3:2', '2:3
 const GROK_VIDEO_RATIOS = ['3:2', '2:3', '1:1'];
 const VIDEO_RES_OPTIONS = ['1080P', '720P'];
 const PROMPT_LIBRARY_KEY = 'tapnow_prompt_library';
+const DEFAULT_SAMPLE_WORKFLOWS = [
+    { id: 'test', name: '测试', downloadUrl: '/workflow-samples/test.json' }
+];
 const GRID_PROMPT_TEXT = `基于我上传的这张参考图，生成一张九宫格（3x3 grid）布局的分镜脚本。请严格保持角色与参考图一致（Keep character strictly consistent），但在9个格子中展示该角色不同的动作、表情和拍摄角度（如正面、侧面、背面、特写等）。要求风格高度统一，形成一张完整的角色动态表（Character Sheet）。`;
 const UPSCALE_PROMPT_TEXT = `请对参考图片进行无损高清放大（Upscale）。请严格保持原图的构图、色彩、光影和所有细节元素不变，不要进行任何创造性的重绘或添加新内容。仅专注于提升分辨率、锐化边缘（Sharpening）和去除噪点（Denoising），实现像素级的高清修复。Best quality, 8k, masterpiece, highres, ultra detailed, sharp focus, image restoration, upscale, faithful to original.`;
 const STORYBOARD_PROMPT_TEXT = `you are a veteran Hollywood storyboard artist with years of experience. You have the ability to accurately analyze character features and scene characteristics based on images. Provide me with the most suitable camera angles and storyboards. Strictly base this on the uploaded character and scene images, while maintaining a consistent visual style.
@@ -5676,6 +5711,8 @@ function TapnowApp() {
     const [localServerUrl, setLocalServerUrl] = useState(() => {
         return localStorage.getItem('tapnow_local_server_url') || 'http://127.0.0.1:9527';
     });
+    const [sampleWorkflows, setSampleWorkflows] = useState(DEFAULT_SAMPLE_WORKFLOWS);
+    const [sampleWorkflowLoadingId, setSampleWorkflowLoadingId] = useState('');
 
     // V2.6.1 Feature: 本地缓存服务器状态
     const [localCacheServerConnected, setLocalCacheServerConnected] = useState(false);
@@ -5997,6 +6034,68 @@ function TapnowApp() {
     useEffect(() => {
         localStorage.setItem('tapnow_local_server_url', localServerUrl);
     }, [localServerUrl]);
+    const normalizeSampleWorkflowItem = useCallback((item, index = 0) => {
+        if (!item || typeof item !== 'object') return null;
+        const idRaw = item.id ?? item.key ?? item.slug ?? `sample-${index + 1}`;
+        const nameRaw = item.name ?? item.title ?? item.label ?? `样例 ${index + 1}`;
+        const name = String(nameRaw || '').trim();
+        if (!name) return null;
+        const firstUrl = item.downloadUrl ?? item.url ?? item.download_url ?? item.href ?? '';
+        let downloadUrl = String(firstUrl || '').trim();
+        if (!downloadUrl) {
+            const fileRaw = item.file ?? item.fileName ?? item.filename ?? item.path ?? '';
+            const file = String(fileRaw || '').trim().replace(/^\/+/, '');
+            if (file) {
+                downloadUrl = `/workflow-samples/${file}`;
+            }
+        }
+        if (!downloadUrl) {
+            downloadUrl = `/workflow-samples/${encodeURIComponent(String(idRaw || `sample-${index + 1}`))}.json`;
+        }
+        return {
+            id: String(idRaw || `sample-${index + 1}`),
+            name,
+            downloadUrl
+        };
+    }, []);
+    const normalizeSampleWorkflowList = useCallback((payload) => {
+        let list = [];
+        if (Array.isArray(payload)) {
+            list = payload;
+        } else if (payload && typeof payload === 'object') {
+            if (Array.isArray(payload.workflows)) list = payload.workflows;
+            else if (Array.isArray(payload.list)) list = payload.list;
+            else if (Array.isArray(payload.data)) list = payload.data;
+        }
+        const normalized = list
+            .map((item, index) => normalizeSampleWorkflowItem(item, index))
+            .filter(Boolean);
+        if (normalized.length === 0) {
+            return DEFAULT_SAMPLE_WORKFLOWS.slice();
+        }
+        return normalized;
+    }, [normalizeSampleWorkflowItem]);
+    const refreshSampleWorkflows = useCallback(async () => {
+        const base = String(localServerUrl || 'http://127.0.0.1:9527').trim().replace(/\/+$/, '');
+        if (!base) {
+            setSampleWorkflows(DEFAULT_SAMPLE_WORKFLOWS.slice());
+            return;
+        }
+        try {
+            const response = await fetch(`${base}/workflow-samples`, { method: 'GET' });
+            if (!response.ok) {
+                setSampleWorkflows(DEFAULT_SAMPLE_WORKFLOWS.slice());
+                return;
+            }
+            const payload = await response.json();
+            setSampleWorkflows(normalizeSampleWorkflowList(payload));
+        } catch (error) {
+            setSampleWorkflows(DEFAULT_SAMPLE_WORKFLOWS.slice());
+        }
+    }, [localServerUrl, normalizeSampleWorkflowList]);
+    useEffect(() => {
+        refreshSampleWorkflows();
+    }, [refreshSampleWorkflows]);
     useEffect(() => {
         try { localStorage.setItem('tapnow_local_cache_enabled', String(localCacheEnabled)); } catch (e) { }
     }, [localCacheEnabled]);
@@ -19241,6 +19340,160 @@ function TapnowApp() {
         }
     };
 
+    const importWorkflowFromData = useCallback(async (data, options = {}) => {
+        const { showSuccessAlert = true } = options;
+        if (!data || typeof data !== 'object' || data.type !== 'workflow') {
+            throw new Error('这不是一个有效的工作流文件。\n\n请使用"保存当前选取工作流"功能导出的文件。');
+        }
+        if (!Array.isArray(data.nodes) || data.nodes.length === 0) {
+            throw new Error(t('工作流文件中没有节点数据'));
+        }
+
+        let localFiles = [];
+        const baseUrl = (localServerUrl || 'http://127.0.0.1:9527').replace(/\/+$/, '');
+        try {
+            if (baseUrl) {
+                const localFilesRes = await fetch(`${baseUrl}/list-files`);
+                if (localFilesRes.ok) {
+                    const localFilesData = await localFilesRes.json();
+                    if (localFilesData.success && localFilesData.files) {
+                        localFiles = localFilesData.files;
+                    }
+                }
+            }
+        } catch (err) {
+            console.log('[导入工作流] 本地服务器未连接');
+        }
+
+        const findLocalFileBySize = (dataUrl) => {
+            if (!localFiles.length || !dataUrl) return null;
+            try {
+                const base64 = dataUrl.split(',')[1];
+                if (!base64) return null;
+                const estimatedSize = Math.floor(base64.length * 0.75);
+                const tolerance = estimatedSize * 0.05;
+                const match = localFiles.find((f) => Math.abs(f.size - estimatedSize) < tolerance);
+                if (match) {
+                    return `${baseUrl}/file/${encodeURIComponent(match.rel_path)}`;
+                }
+            } catch (err) { }
+            return null;
+        };
+
+        const convertNodeUrls = async (node) => {
+            const stack = [node];
+            while (stack.length > 0) {
+                const current = stack.pop();
+                if (!current || typeof current !== 'object') continue;
+
+                for (const key in current) {
+                    const val = current[key];
+                    if (typeof val === 'string' && (val.startsWith('data:image/') || val.startsWith('data:video/'))) {
+                        try {
+                            const localUrl = findLocalFileBySize(val);
+                            if (localUrl) {
+                                const testRes = await fetch(localUrl, { method: 'HEAD' });
+                                if (testRes.ok) {
+                                    current[key] = localUrl;
+                                    continue;
+                                }
+                            }
+                            const res = await fetch(val);
+                            const blob = await res.blob();
+                            current[key] = URL.createObjectURL(blob);
+                        } catch (err) { }
+                    } else if (typeof val === 'object' && val !== null) {
+                        stack.push(val);
+                    }
+                }
+            }
+            return node;
+        };
+
+        const idMap = new Map();
+        data.nodes.forEach((node) => {
+            idMap.set(node.id, `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+        });
+
+        const canvasElement = canvasRef.current;
+        let importX = 100;
+        let importY = 100;
+        if (canvasElement) {
+            const rect = canvasElement.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const worldPos = screenToWorld(centerX + rect.left, centerY + rect.top);
+            importX = worldPos.x;
+            importY = worldPos.y;
+        }
+
+        let minX = Infinity;
+        let minY = Infinity;
+        data.nodes.forEach((node) => {
+            if (node.x < minX) minX = node.x;
+            if (node.y < minY) minY = node.y;
+        });
+
+        const safeMinX = Number.isFinite(minX) ? minX : 0;
+        const safeMinY = Number.isFinite(minY) ? minY : 0;
+        const newNodes = [];
+        for (const node of data.nodes) {
+            const convertedNode = await convertNodeUrls({ ...node });
+            convertedNode.id = idMap.get(node.id);
+            convertedNode.x = (Number(node.x) || 0) - safeMinX + importX;
+            convertedNode.y = (Number(node.y) || 0) - safeMinY + importY;
+            newNodes.push(convertedNode);
+        }
+
+        const newConnections = (data.connections || []).map((conn) => ({
+            ...conn,
+            from: idMap.get(conn.from),
+            to: idMap.get(conn.to)
+        })).filter((conn) => conn.from && conn.to);
+
+        setNodes((prev) => [...prev, ...newNodes]);
+        setConnections((prev) => [...prev, ...newConnections]);
+        setSelectedNodeIds(new Set(newNodes.map((n) => n.id)));
+
+        if (showSuccessAlert) {
+            alert(`工作流导入成功！\n\n导入了 ${newNodes.length} 个节点和 ${newConnections.length} 个连接。`);
+        } else {
+            showToast(`工作流已加载：${newNodes.length} 个节点 / ${newConnections.length} 个连接`, 'success', 2600);
+        }
+        return { newNodes, newConnections };
+    }, [localServerUrl, screenToWorld, showToast, t]);
+
+    const getSampleWorkflowDownloadUrl = useCallback((sample) => {
+        const source = String(sample?.downloadUrl || '').trim();
+        const base = String(localServerUrl || 'http://127.0.0.1:9527').trim().replace(/\/+$/, '');
+        if (/^https?:\/\//i.test(source)) return source;
+        const normalizedSource = source.startsWith('/') ? source : `/${source}`;
+        return `${base}${normalizedSource}`;
+    }, [localServerUrl]);
+
+    const handleLoadSampleWorkflow = useCallback(async (sample) => {
+        if (!sample) return;
+        const sampleName = String(sample.name || '样例工作流').trim() || '样例工作流';
+        const sampleId = String(sample.id || sampleName);
+        const loadingToastId = showToast(`正在下载「${sampleName}」工作流...`, 'info', 600000);
+        setSampleWorkflowLoadingId(sampleId);
+        try {
+            const downloadUrl = getSampleWorkflowDownloadUrl(sample);
+            const response = await fetch(downloadUrl, { method: 'GET' });
+            if (!response.ok) {
+                throw new Error(`下载失败（HTTP ${response.status}）`);
+            }
+            const text = await response.text();
+            const workflowData = JSON.parse(text);
+            await importWorkflowFromData(workflowData, { showSuccessAlert: false });
+        } catch (error) {
+            showToast(`加载样例工作流失败: ${error.message || '未知错误'}`, 'error', 3600);
+        } finally {
+            dismissToast(loadingToastId);
+            setSampleWorkflowLoadingId('');
+        }
+    }, [showToast, getSampleWorkflowDownloadUrl, importWorkflowFromData, dismissToast]);
+
     // 导入工作流（将工作流节点添加到当前画布）
     const handleImportWorkflow = async () => {
         const input = document.createElement('input');
@@ -19249,124 +19502,10 @@ function TapnowApp() {
         input.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             try {
                 const text = await file.text();
                 const data = JSON.parse(text);
-
-                if (data.type !== 'workflow') {
-                    alert('这不是一个有效的工作流文件。\n\n请使用"保存当前选取工作流"功能导出的文件。');
-                    return;
-                }
-                if (!data.nodes || data.nodes.length === 0) {
-                    alert(t('工作流文件中没有节点数据'));
-                    return;
-                }
-
-                let localFiles = [];
-                const baseUrl = (localServerUrl || 'http://127.0.0.1:9527').replace(/\/+$/, '');
-                try {
-                    if (baseUrl) {
-                        const localFilesRes = await fetch(`${baseUrl}/list-files`);
-                        if (localFilesRes.ok) {
-                            const localFilesData = await localFilesRes.json();
-                            if (localFilesData.success && localFilesData.files) {
-                                localFiles = localFilesData.files;
-                                console.log(`[导入工作流] 本地库已连接，找到 ${localFiles.length} 个文件`);
-                            }
-                        }
-                    }
-                } catch (err) {
-                    console.log('[导入工作流] 本地服务器未连接');
-                }
-
-                const findLocalFileBySize = (dataUrl) => {
-                    if (!localFiles.length || !dataUrl) return null;
-                    try {
-                        const base64 = dataUrl.split(',')[1];
-                        if (!base64) return null;
-                        const estimatedSize = Math.floor(base64.length * 0.75);
-                        const tolerance = estimatedSize * 0.05;
-                        const match = localFiles.find(f => Math.abs(f.size - estimatedSize) < tolerance);
-                        if (match) {
-                            return `${baseUrl}/file/${encodeURIComponent(match.rel_path)}`;
-                        }
-                    } catch (err) { }
-                    return null;
-                };
-
-                const convertNodeUrls = async (node) => {
-                    const stack = [node];
-                    while (stack.length > 0) {
-                        const current = stack.pop();
-                        if (!current || typeof current !== 'object') continue;
-
-                        for (const key in current) {
-                            const val = current[key];
-                            if (typeof val === 'string' && (val.startsWith('data:image/') || val.startsWith('data:video/'))) {
-                                try {
-                                    const localUrl = findLocalFileBySize(val);
-                                    if (localUrl) {
-                                        const testRes = await fetch(localUrl, { method: 'HEAD' });
-                                        if (testRes.ok) {
-                                            current[key] = localUrl;
-                                            continue;
-                                        }
-                                    }
-                                    const res = await fetch(val);
-                                    const blob = await res.blob();
-                                    current[key] = URL.createObjectURL(blob);
-                                } catch (err) { }
-                            } else if (typeof val === 'object' && val !== null) {
-                                stack.push(val);
-                            }
-                        }
-                    }
-                    return node;
-                };
-
-                const idMap = new Map();
-                data.nodes.forEach(node => {
-                    idMap.set(node.id, `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
-                });
-
-                const canvasElement = canvasRef.current;
-                let importX = 100, importY = 100;
-                if (canvasElement) {
-                    const rect = canvasElement.getBoundingClientRect();
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const worldPos = screenToWorld(centerX + rect.left, centerY + rect.top);
-                    importX = worldPos.x;
-                    importY = worldPos.y;
-                }
-
-                let minX = Infinity, minY = Infinity;
-                data.nodes.forEach(node => {
-                    if (node.x < minX) minX = node.x;
-                    if (node.y < minY) minY = node.y;
-                });
-
-                const newNodes = [];
-                for (const node of data.nodes) {
-                    const convertedNode = await convertNodeUrls({ ...node });
-                    convertedNode.id = idMap.get(node.id);
-                    convertedNode.x = node.x - minX + importX;
-                    convertedNode.y = node.y - minY + importY;
-                    newNodes.push(convertedNode);
-                }
-
-                const newConnections = (data.connections || []).map(conn => ({
-                    ...conn,
-                    from: idMap.get(conn.from),
-                    to: idMap.get(conn.to)
-                })).filter(conn => conn.from && conn.to);
-
-                setNodes(prev => [...prev, ...newNodes]);
-                setConnections(prev => [...prev, ...newConnections]);
-                setSelectedNodeIds(new Set(newNodes.map(n => n.id)));
-
-                alert(`工作流导入成功！\n\n导入了 ${newNodes.length} 个节点和 ${newConnections.length} 个连接。`);
+                await importWorkflowFromData(data, { showSuccessAlert: true });
             } catch (error) {
                 console.error('导入工作流失败:', error);
                 alert('导入失败: ' + (error.message || '无效的JSON文件'));
@@ -33134,29 +33273,27 @@ ${inputText.substring(0, 15000)} ... (截断)
                     </div>
                 </div>
 
-                <div className="kokoni-info-strip px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
-                    <div className="kokoni-company-pill">
-                        <Monitor size={12} />
-                        <span>Company: Moxin (Huzhou) Technology Co., LTD · Huzhou / Shenzhen / Hong Kong</span>
+                <div className="kokoni-samples-strip px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+                    <span className="text-[11px] font-semibold text-[#1e4e83] whitespace-nowrap">样例工作流</span>
+                    <div className="flex items-center gap-2">
+                        {sampleWorkflows.map((item, index) => {
+                            const itemId = String(item.id || `sample-${index}`);
+                            const isLoading = sampleWorkflowLoadingId === itemId;
+                            return (
+                                <button
+                                    key={itemId}
+                                    type="button"
+                                    className="kokoni-sample-btn"
+                                    onClick={() => handleLoadSampleWorkflow(item)}
+                                    disabled={isLoading}
+                                    title={isLoading ? `正在下载 ${item.name}` : `加载 ${item.name}`}
+                                >
+                                    <Download size={12} />
+                                    <span>{isLoading ? `下载中：${item.name}` : item.name}</span>
+                                </button>
+                            );
+                        })}
                     </div>
-                    <a
-                        className="kokoni-dev-link"
-                        href="https://www.kokoni3d.com/pages/app"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <Code size={12} />
-                        <span>Developer: KOKONI 3D App Team</span>
-                    </a>
-                    <a
-                        className="kokoni-dev-link"
-                        href="https://www.kokoni3d.com/pages/kokoni-support"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <Sparkles size={12} />
-                        <span>Support: kokoni3d.com/pages/kokoni-support</span>
-                    </a>
                 </div>
 
                 <div className={`flex-1 relative overflow-hidden flex transition-colors duration-300 ${theme === 'dark'
@@ -38646,6 +38783,30 @@ ${inputText.substring(0, 15000)} ... (截断)
                         )}
                     </div>
 
+                </div>
+                <div className="kokoni-footer-strip px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+                    <div className="kokoni-company-pill">
+                        <Monitor size={12} />
+                        <span>Company: Moxin (Huzhou) Technology Co., LTD · Huzhou / Shenzhen / Hong Kong</span>
+                    </div>
+                    <a
+                        className="kokoni-dev-link"
+                        href="https://www.kokoni3d.com/pages/app"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <Code size={12} />
+                        <span>Developer: KOKONI 3D App Team</span>
+                    </a>
+                    <a
+                        className="kokoni-dev-link"
+                        href="https://www.kokoni3d.com/pages/kokoni-support"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <Sparkles size={12} />
+                        <span>Support: kokoni3d.com/pages/kokoni-support</span>
+                    </a>
                 </div>
             </div >
 
