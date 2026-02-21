@@ -1789,6 +1789,175 @@ const styles = `
         .theme-solarized .markdown-body pre { background: #ddddc1; color: #586e75; }
         .theme-solarized .markdown-body code { background: #ddddc1; color: #586e75; }
         .theme-solarized .markdown-body pre code { color: #586e75; }
+
+        /* ------------------------------------------------------------------
+           KOKONI visual refresh (site-inspired)
+           ------------------------------------------------------------------ */
+        .theme-dark,
+        .theme-light,
+        .theme-solarized {
+            --kokoni-bg-0: #eef6ff;
+            --kokoni-bg-1: #f7fbff;
+            --kokoni-card: rgba(255, 255, 255, 0.82);
+            --kokoni-card-strong: rgba(255, 255, 255, 0.94);
+            --kokoni-border: rgba(71, 146, 226, 0.24);
+            --kokoni-text: #0f2647;
+            --kokoni-muted: #5c7699;
+            --kokoni-primary: #1f8bff;
+            --kokoni-primary-2: #2ac7cf;
+            --kokoni-shadow: 0 14px 40px rgba(30, 93, 173, 0.14);
+            --canvas-grid-color: rgba(43, 130, 230, 0.24);
+        }
+
+        .kokoni-shell {
+            position: relative;
+            background: linear-gradient(150deg, var(--kokoni-bg-0) 0%, var(--kokoni-bg-1) 45%, #ecf9ff 100%) !important;
+            color: var(--kokoni-text) !important;
+            overflow: hidden;
+        }
+        .kokoni-shell::before {
+            content: '';
+            position: absolute;
+            inset: -180px auto auto -120px;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(32, 140, 255, 0.24) 0%, rgba(32, 140, 255, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .kokoni-shell > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .kokoni-topbar {
+            background: rgba(248, 252, 255, 0.85) !important;
+            border-bottom: 1px solid var(--kokoni-border) !important;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 24px rgba(18, 74, 142, 0.08);
+        }
+
+        .kokoni-info-strip {
+            border-bottom: 1px solid var(--kokoni-border);
+            background: rgba(255, 255, 255, 0.68);
+            backdrop-filter: blur(10px);
+        }
+        .kokoni-company-pill,
+        .kokoni-dev-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--kokoni-border);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 10px;
+            line-height: 1;
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--kokoni-text);
+            text-decoration: none;
+            box-shadow: 0 6px 18px rgba(15, 68, 129, 0.08);
+            white-space: nowrap;
+        }
+        .kokoni-dev-link:hover {
+            border-color: rgba(31, 139, 255, 0.42);
+            transform: translateY(-1px);
+        }
+
+        .kokoni-shell [class*="bg-zinc-"],
+        .kokoni-shell [class*="bg-[#09090b]"],
+        .kokoni-shell [class*="bg-[#121214]"],
+        .kokoni-shell [class*="bg-[#18181b]"],
+        .kokoni-shell [class*="bg-white"] {
+            background-color: var(--kokoni-card) !important;
+            border-color: var(--kokoni-border) !important;
+            color: var(--kokoni-text);
+        }
+
+        .kokoni-shell [class*="text-zinc-"] {
+            color: var(--kokoni-muted);
+        }
+
+        .kokoni-shell [class*="border-zinc-"],
+        .kokoni-shell [class*="border-[#d7cfb2]"],
+        .kokoni-shell [class*="border-[#eee8d5]"] {
+            border-color: var(--kokoni-border) !important;
+        }
+
+        .kokoni-shell button,
+        .kokoni-shell .btn {
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .kokoni-shell button:hover {
+            transform: translateY(-1px);
+        }
+
+        .kokoni-shell button[class*="bg-blue-"],
+        .kokoni-shell button[class*="bg-green-"],
+        .kokoni-shell button[class*="from-blue-"],
+        .kokoni-shell button[class*="to-indigo-"] {
+            background-image: linear-gradient(90deg, var(--kokoni-primary) 0%, var(--kokoni-primary-2) 100%) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 24px rgba(25, 120, 220, 0.25);
+        }
+
+        .kokoni-shell input,
+        .kokoni-shell textarea,
+        .kokoni-shell select {
+            background: rgba(255, 255, 255, 0.92) !important;
+            border-color: rgba(82, 149, 218, 0.35) !important;
+            color: #18345f !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        #canvas-bg {
+            background-image: radial-gradient(var(--canvas-grid-color) 1.2px, transparent 1.2px), linear-gradient(transparent, transparent) !important;
+            background-size: 26px 26px !important;
+            background-color: rgba(241, 248, 255, 0.88) !important;
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 1px rgba(82, 149, 218, 0.2);
+        }
+
+        .node-wrapper {
+            border-radius: 16px !important;
+            border: 1px solid rgba(82, 149, 218, 0.35) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: var(--kokoni-shadow) !important;
+        }
+
+        .connector {
+            background-color: #ffffff;
+            border-color: #75b4f6;
+            color: #4e87cb;
+        }
+        .connector:hover,
+        .connector.active {
+            background-color: #1f8bff;
+            border-color: #2ac7cf;
+            color: #ffffff;
+        }
+
+        .lightbox-overlay {
+            background: rgba(8, 25, 48, 0.82);
+            backdrop-filter: blur(8px);
+        }
+
+        .art-loader-container {
+            background: linear-gradient(160deg, #eef6ff 0%, #f7fbff 60%, #e6f7ff 100%);
+            color: #163760;
+        }
+        .art-ring-outer {
+            border-color: rgba(32, 140, 255, 0.26);
+        }
+        .art-ring-inner {
+            border-top-color: #1f8bff;
+            border-left-color: rgba(42, 199, 207, 0.55);
+        }
+        .art-dot {
+            background-color: #1f8bff;
+            box-shadow: 0 0 14px rgba(31, 139, 255, 0.35);
+        }
         `;
 
 // --- 虚拟画布尺寸 ---
@@ -4524,9 +4693,9 @@ const Lightbox = ({ item, onClose, onNavigate, onShotNavigate, onHistoryNavigate
 function TapnowApp() {
     const [theme, setTheme] = useState(() => {
         try {
-            return localStorage.getItem('tapnow_theme') || 'dark';
+            return localStorage.getItem('tapnow_theme') || 'light';
         } catch (e) {
-            return 'dark';
+            return 'light';
         }
     });
     const [language, setLanguage] = useState('zh');
@@ -4589,13 +4758,13 @@ function TapnowApp() {
         root.classList.remove('theme-dark', 'theme-light', 'theme-solarized');
         if (theme === 'dark') {
             root.classList.add('theme-dark');
-            document.body.style.backgroundColor = '#09090b';
+            document.body.style.backgroundColor = '#e9f4ff';
         } else if (theme === 'solarized') {
             root.classList.add('theme-solarized');
-            document.body.style.backgroundColor = '#fdf6e3';
+            document.body.style.backgroundColor = '#f2fbff';
         } else {
             root.classList.add('theme-light');
-            document.body.style.backgroundColor = '#f4f4f5';
+            document.body.style.backgroundColor = '#f7fcff';
         }
     }, [theme]);
 
@@ -18443,7 +18612,7 @@ function TapnowApp() {
                     const bundleName = `${projectName || '未命名项目'}_${timestamp}.zip`;
                     const handle = await window.showSaveFilePicker({
                         suggestedName: bundleName,
-                        types: [{ description: 'Tapnow Bundle', accept: { 'application/zip': ['.zip'] } }],
+                        types: [{ description: 'KOKONI Bundle', accept: { 'application/zip': ['.zip'] } }],
                     });
                     const projectData = {
                         version: '2.5.7',
@@ -32732,7 +32901,7 @@ ${inputText.substring(0, 15000)} ... (截断)
                 type={progressState.type}
             />
             <div
-                className={`w-full h-screen font-sans overflow-hidden select-none flex flex-col transition-colors duration-300 ${theme === 'dark'
+                className={`kokoni-shell w-full h-screen font-sans overflow-hidden select-none flex flex-col transition-colors duration-300 ${theme === 'dark'
                     ? 'bg-[#09090b] text-white'
                     : theme === 'solarized'
                         ? 'bg-[#fdf6e3] text-[#586e75]'
@@ -32746,7 +32915,7 @@ ${inputText.substring(0, 15000)} ... (截断)
             >
                 {/* Top Bar */}
                 <div
-                    className={`h-12 flex items-center justify-between px-4 z-50 shrink-0 border-b transition-colors duration-300 ${theme === 'dark'
+                    className={`kokoni-topbar h-12 flex items-center justify-between px-4 z-50 shrink-0 border-b transition-colors duration-300 ${theme === 'dark'
                         ? 'bg-[#09090b] border-zinc-800'
                     : theme === 'solarized'
                         ? 'bg-[#eee8d5] border-[#d7cfb2]'
@@ -32754,14 +32923,14 @@ ${inputText.substring(0, 15000)} ... (截断)
                         }`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-md flex items-center justify-center">
+                        <div className="w-7 h-7 bg-gradient-to-br from-[#1f8bff] to-[#2ac7cf] rounded-md flex items-center justify-center shadow-[0_8px_20px_rgba(31,139,255,0.35)]">
                             <Layers size={16} className="text-white" />
                         </div>
                         <span
                             className={`font-bold text-sm tracking-wide ${theme === 'dark' ? 'text-zinc-200' : 'text-zinc-800'
                                 }`}
                         >
-                            Tapnow Studio
+                            KOKONI Creative Studio
                         </span>
                         {/* 功能4：项目名称编辑 */}
                         {isEditingProjectName ? (
@@ -32963,6 +33132,31 @@ ${inputText.substring(0, 15000)} ... (截断)
                             {t('API 设置')}
                         </Button>
                     </div>
+                </div>
+
+                <div className="kokoni-info-strip px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+                    <div className="kokoni-company-pill">
+                        <Monitor size={12} />
+                        <span>Company: Moxin (Huzhou) Technology Co., LTD · Huzhou / Shenzhen / Hong Kong</span>
+                    </div>
+                    <a
+                        className="kokoni-dev-link"
+                        href="https://www.kokoni3d.com/pages/app"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <Code size={12} />
+                        <span>Developer: KOKONI 3D App Team</span>
+                    </a>
+                    <a
+                        className="kokoni-dev-link"
+                        href="https://www.kokoni3d.com/pages/kokoni-support"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <Sparkles size={12} />
+                        <span>Support: kokoni3d.com/pages/kokoni-support</span>
+                    </a>
                 </div>
 
                 <div className={`flex-1 relative overflow-hidden flex transition-colors duration-300 ${theme === 'dark'
